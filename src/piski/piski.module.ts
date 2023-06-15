@@ -1,9 +1,9 @@
-export class Piski {
+import { Module } from "@nestjs/common";
+import { PiskiController } from "./piski.controller";
+import { PiskiService } from "./piski.service";
 
-  constructor(
-    public id: string, 
-    public title: string, 
-    public size: number, 
-    public description: string
-    ) {}
-}
+@Module({
+  controllers: [PiskiController],
+  providers: [PiskiService]
+})
+export class PiskiModule {} 

@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { PiskiModule } from './piski/piski.module';
 
 @Module({
-  imports: [],
+  imports: [PiskiModule],
   controllers: [AppController],
   providers: [AppService],
 })
