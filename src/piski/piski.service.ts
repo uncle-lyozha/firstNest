@@ -3,7 +3,7 @@ import { Piski } from "./piski.model"
 
 @Injectable()
 export class PiskiService {
-  piski: Piski[] = [];
+  private piski: Piski[] = [];
 
   insertPiski(title: string, size: number, description: string) {
     const piskiID = Math.random().toString();
@@ -17,10 +17,31 @@ export class PiskiService {
   }
 
   getSinglePiska(piskiID: string) {
-    const piska = this.piski.find(pis => pis.id === piskiID);
+    const piska = this.findPiska(piskiID)[0];
+    return { ... piska };
+  }
+
+  updatePiska(piskiID: string, title: string, size: number, description: string) {
+    const [piska, index] = this.findPiska(piskiID);
+    const updPiska = {...piska};
+    if (title) {
+      updPiska.title = title;
+    }
+    if (size) {
+      updPiska.size = size;
+    }
+    if (description) {
+      updPiska.description = description;
+    }
+    this.piski[index] = updPiska;
+  }
+
+  private findPiska(id: string): [Piski, number] {
+    const piskaIndex = this.piski.findIndex(pis => pis.id === id);
+    const piska = this.piski[piskaIndex];
     if (!piska) {
       throw new NotFoundException('Could not found piska.');
     }
-    return { ... piska };
+    return [piska, piskaIndex];
   }
 }
