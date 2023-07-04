@@ -36,6 +36,11 @@ export class PiskiService {
     this.piski[index] = updPiska;
   }
 
+  deletePiska(piskiID: string) {
+    const index = this.findPiska(piskiID)[1];
+    this.piski.splice(index, 1);    
+  }
+
   private findPiska(id: string): [Piski, number] {
     const piskaIndex = this.piski.findIndex(pis => pis.id === id);
     const piska = this.piski[piskaIndex];
