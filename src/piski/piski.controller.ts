@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Param, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Post, Param, Patch, Delete } from '@nestjs/common';
 import { PiskiService } from './piski.service';
 
 @Controller('piski')
@@ -33,6 +33,12 @@ export class PiskiController {
     @Body('description') piskiDesc: string,
   ) {
     this.piskiService.updatePiska(piskiID, piskiTitle, piskiSize, piskiDesc);
+    return null;
+  }
+
+  @Delete(':id')
+  removePiska(@Param('id') piskiID: string ) {
+    this.piskiService.deletePiska(piskiID);
     return null;
   }
 }
