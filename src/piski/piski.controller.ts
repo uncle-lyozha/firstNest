@@ -6,18 +6,24 @@ export class PiskiController {
   constructor(private readonly piskiService: PiskiService) {}
   
   @Post()
-  addPiski(
+  async addPiski(
     @Body('title') piskiTitle: string,
     @Body('size') piskiSize: number,
     @Body('description') piskiDesc: string,
   ) {
-    const generatedId = this.piskiService.insertPiski(piskiTitle, piskiSize, piskiDesc);
+    const generatedId = await this.piskiService.insertPiski(piskiTitle, piskiSize, piskiDesc);
     return { id: generatedId}
   }
 
   @Get()
-  getAllPiski() {
-    return this.piskiService.getPiski();
+  async getAllPiski() {
+    const piski = await this.piskiService.getPiski();
+    return piski.map(pis => ({
+      id: pis.id, 
+      title: pis.title, 
+      size: pis.size, 
+      description: pis.description
+    }));
   }
 
   @Get(':id') 
@@ -26,19 +32,19 @@ export class PiskiController {
   }
 
   @Patch(':id')
-  updatePiski(
+  async updatePiski(
     @Param('id') piskiID: string, 
     @Body('title') piskiTitle: string,
     @Body('size') piskiSize: number,
     @Body('description') piskiDesc: string,
   ) {
-    this.piskiService.updatePiska(piskiID, piskiTitle, piskiSize, piskiDesc);
+    await this.piskiService.updatePiska(piskiID, piskiTitle, piskiSize, piskiDesc);
     return null;
   }
 
   @Delete(':id')
-  removePiska(@Param('id') piskiID: string ) {
-    this.piskiService.deletePiska(piskiID);
+  async removePiska(@Param('id') piskiID: string ) {
+    await this.piskiService.deletePiska(piskiID);
     return null;
   }
 }

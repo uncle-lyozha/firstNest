@@ -5,7 +5,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { PiskiSchema } from "./piski.model";
 
 @Module({
-  imports: [MongooseModule.forFeature([{name: 'Piski', schema: PiskiSchema}])]
+  imports: [MongooseModule.forFeature([{name: 'Piski', schema: PiskiSchema}])],
   controllers: [PiskiController],
   providers: [PiskiService]
 })

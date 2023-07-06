@@ -1,29 +1,38 @@
 import { Injectable, NotFoundException} from "@nestjs/common";
-import { Piski } from "./piski.model"
+import { Piski } from "./piski.model";
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class PiskiService {
   private piski: Piski[] = [];
 
-  insertPiski(title: string, size: number, description: string) {
+  constructor(@InjectModel('Piski') private readonly piskiModel: Model<Piski>) {};
+
+  async insertPiski(title: string, size: number, description: string) {
     const piskiID = Math.random().toString();
-    const newPiska = new Piski(piskiID, title, size, description);
-    this.piski.push(newPiska);
-    return piskiID;
+    const newPiska = new this.piskiModel({
+      title: title, 
+      size: size, 
+      description: description
+    });
+    const result = await newPiska.save();
+    console.log(result);
+    return result.id as string;
   }
 
-  getPiski() {
-    return [...this.piski];
+  async getPiski() {
+    const piski = await this.piskiModel.find().exec();
+    return piski as Piski[];
   }
 
-  getSinglePiska(piskiID: string) {
-    const piska = this.findPiska(piskiID)[0];
-    return { ... piska };
+  async getSinglePiska(piskiID: string) {
+    const piska = await this.findPiska(piskiID);
+    return {id: piska.id, title: piska.title, size: piska.size, description: piska.description};
   }
 
-  updatePiska(piskiID: string, title: string, size: number, description: string) {
-    const [piska, index] = this.findPiska(piskiID);
-    const updPiska = {...piska};
+  async updatePiska(piskiID: string, title: string, size: number, description: string) {
+    const updPiska = await this.findPiska(piskiID);
     if (title) {
       updPiska.title = title;
     }
@@ -33,20 +42,26 @@ export class PiskiService {
     if (description) {
       updPiska.description = description;
     }
-    this.piski[index] = updPiska;
+    updPiska.save();
   }
 
-  deletePiska(piskiID: string) {
-    const index = this.findPiska(piskiID)[1];
-    this.piski.splice(index, 1);    
+  async deletePiska(piskiID: string) { 
+    const result = await this.piskiModel.deleteOne({_id: piskiID}).exec();
+    if (result.deletedCount === 0) {
+      throw new NotFoundException('Could not found piska.'); 
+    }
   }
 
-  private findPiska(id: string): [Piski, number] {
-    const piskaIndex = this.piski.findIndex(pis => pis.id === id);
-    const piska = this.piski[piskaIndex];
+  private async findPiska(id: string): Promise<Piski> {
+    let piska;
+    try {
+      piska = await this.piskiModel.findById(id).exec();
+    } catch (error) {
+      throw new NotFoundException('Could not found piska.');
+    }
     if (!piska) {
       throw new NotFoundException('Could not found piska.');
     }
-    return [piska, piskaIndex];
+    return piska;
   }
 }

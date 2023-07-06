@@ -6,11 +6,9 @@ export const PiskiSchema = new mongoose.Schema({
   description: {type: String, required: true}
 });
 
-export class Piski {
-  constructor(
-    public id: string, 
-    public title: string, 
-    public size: number, 
-    public description: string
-    ) {}
+export interface Piski extends mongoose.Document {
+  id: string, 
+  title: string, 
+  size: number, 
+  description: string
 }
